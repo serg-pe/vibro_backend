@@ -4,29 +4,18 @@ from fastapi import FastAPI, WebSocket, Request, WebSocketDisconnect, Query
 from fastapi.responses import JSONResponse
 from nanoid import generate as generate_nanoid
 
-from room import Room
+from room.room import Room
+from room.rooms_manager import RoomsManager
 from commands import Commands
 
 
-NANOID_ALPHABET = '0123456789'
-NANOID_LENGTH = 10
-
-
 app = FastAPI()
-
-
-rooms: Dict[int, Room] = {}
-
-listened_clients = []
+rooms_manager = RoomsManager()
 
 
 @app.get('/api/create-room')
 async def create_room():
-    room_id = int(generate_nanoid(NANOID_ALPHABET, NANOID_LENGTH))
-    while rooms.get(room_id):
-        room_id = generate_nanoid(NANOID_ALPHABET, NANOID_LENGTH)
-    
-    rooms[room_id] = Room()
+    room_id = rooms_manager.init_room()
 
     return JSONResponse({
         'roomId': f'{room_id}',
@@ -62,15 +51,16 @@ async def notify_subscriber(websocket: WebSocket, room: Room):
 
 @app.websocket('/room/{room_id}/')
 async def listener(websocket: WebSocket, room_id: int, is_initiator: bool=Query(False, alias='is-initiator')):
-    room = rooms.get(room_id)
+    await rooms_manager.accept_connection(websocket, room_id, is_initiator)
+    # room = rooms.get(room_id)
 
-    if (not room) or (is_initiator and room.initiator):
-        await websocket.close()
-        return
+    # if (not room) or (is_initiator and room.initiator):
+    #     await websocket.close()
+    #     return
     
-    await websocket.accept()
+    # await websocket.accept()
     
-    if is_initiator:
-        await listen_initiator(websocket, room)
-    else:
-        await notify_subscriber(websocket, room)
+    # if is_initiator:
+    #     await listen_initiator(websocket, room)
+    # else:
+    #     await notify_subscriber(websocket, room)

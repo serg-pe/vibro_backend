@@ -1,0 +1,2 @@
+class RoomClosedException(Exception):
+    pass
