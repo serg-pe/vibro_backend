@@ -2,6 +2,7 @@ from enum import Enum
 
 
 class Commands(Enum):
+    
     VIBRATION_ON = int.to_bytes(1, 1, 'big', signed=False)
     VIBRATION_OFF = int.to_bytes(2, 1, 'big', signed=False)
     OUT_OF_CLIENTS = int.to_bytes(3, 1, 'big', signed=False)

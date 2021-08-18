@@ -1,5 +1,3 @@
-from typing import Dict, List
-
 from fastapi import WebSocket, Query, APIRouter
 
 from connections_manager import ConnectionsManager
