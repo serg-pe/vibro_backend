@@ -139,7 +139,10 @@ class ConnectionsManager:
 
             while True:
                 signal = await self._initiator.receive_bytes()
-                await self._notify_subscribers(signal)
+                if signal == Commands.PING.value:
+                    await self._initiator.send_bytes(Commands.PONG.value)
+                else:
+                    await self._notify_subscribers(signal)
 
         except Exception as e:
             if not isinstance(e, WebSocketDisconnect):
@@ -164,7 +167,8 @@ class ConnectionsManager:
 
             while True:
                 signal = await websocket.receive_bytes()
-                print(f'Client {subscriber_id} sent: {int.from_bytes(signal, "big", signed=False)}')
+                if signal == Commands.PING.value:
+                    await websocket.send_bytes(Commands.PONG.value)
 
         except Exception as e:
             if not isinstance(e, WebSocketDisconnect):

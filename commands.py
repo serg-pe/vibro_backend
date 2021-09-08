@@ -11,3 +11,6 @@ class Commands(Enum):
     INITIATOR_CONNECTED = int.to_bytes(4, 1, 'big', signed=False)
 
     UPDATE_CLIENTS_STATISTIC = int.to_bytes(5, 1, 'big', signed=False)
+    
+    PING = int.to_bytes(6, 1, 'big', signed=False)
+    PONG = int.to_bytes(7, 1, 'big', signed=False)
